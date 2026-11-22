@@ -1,0 +1,17 @@
+*.iml
+.gradle/
+/local.properties
+/.idea/
+.DS_Store
+/build/
+/app/build/
+/captures/
+.externalNativeBuild/
+.cxx/
+.kotlin/
+
+# google-services.json no tiene contrasenas, pero muchos prefieren no subirlo.
+# Descomenta la siguiente linea si tu instructor lo pide:
+# app/google-services.json
+
+app/google-services.json

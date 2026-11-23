@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid}/vehicles/{vehicleId} {
+      function isOwner() {
+        return request.auth != null && request.auth.uid == uid;
+      }
+      function validVehicle() {
+        let d = request.resource.data;
+        return d.keys().hasOnly([
+            'id', 'plate', 'brand', 'ownerName', 'service',
+            'costCop', 'mileage', 'updatedAt', 'isDeleted'
+          ])
+          && d.id == vehicleId
+          && d.plate is string && d.plate.matches('^[A-Z]{3}[0-9]{2}[0-9A-Z]$')
+          && d.brand is string && d.brand.size() > 0 && d.brand.size() <= 40
+          && d.ownerName is string && d.ownerName.size() > 0
+          && d.ownerName.size() <= 80
+          && d.service is string && d.service.size() <= 500
+          && d.costCop is int && d.costCop >= 0
+          && d.mileage is int && d.mileage >= 0
+          && d.updatedAt is int
+          && d.isDeleted is bool;
+      }
+      allow read: if isOwner();
+      allow create, update: if isOwner() && validVehicle();
+      allow delete: if isOwner();
+    }
+  }
+}
